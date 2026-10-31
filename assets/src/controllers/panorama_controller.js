@@ -12,13 +12,13 @@ export default class extends Controller {
         this.visible = true;
         this.alpha = 1;
         try {
-            const nodes = this.scenesValue.map(tourNode);
+            const nodes = this.scenesValue.map(scene => tourNode(scene, this.scenesValue));
             this.viewer = new Viewer({
                 container: this.canvasTarget,
                 useXmpData: false,
                 navbar: ['zoom', 'move', 'fullscreen'],
                 plugins: [MarkersPlugin, [VirtualTourPlugin, {
-                    dataMode: 'client', positionMode: 'gps', renderMode: '3d',
+                    dataMode: 'client', positionMode: 'manual', renderMode: '3d',
                     nodes, startNodeId: this.startIdValue, preload: false,
                 }]],
             });

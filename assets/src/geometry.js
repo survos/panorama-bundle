@@ -25,15 +25,22 @@ export function correction(heading, useNewAngles) {
     return { pan: (heading - 90) / 180 * 3.1416, tilt: 0, roll: 0 };
 }
 
-export function tourNode(scene) {
+export function tourNode(scene, scenes) {
     return {
         id: scene.id,
         panorama: scene.largeImageUrl,
         name: scene.title,
         sphereCorrection: correction(scene.heading, scene.useNewAngles),
         panoData: { poseHeading: 0, posePitch: 0, poseRoll: 0 },
-        gps: scene.coordinates,
-        links: scene.connections.map(id => ({ nodeId: id })),
+        links: scene.connections.map(id => {
+            const target = scenes.find(node => node.id === id);
+            if (!target || !scene.coordinates || !target.coordinates) throw new Error('Connected scenes require coordinates');
+            const [lon1, lat1] = scene.coordinates.map(v => v * Math.PI / 180);
+            const [lon2, lat2] = target.coordinates.map(v => v * Math.PI / 180);
+            const yaw = Math.atan2(Math.sin(lon2 - lon1) * Math.cos(lat2),
+                Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
+            return { nodeId: id, position: { yaw, pitch: 0 } };
+        }),
         markers: scene.placements.map(photo => ({
             id: photo.id,
             imageLayer: photo.largeImageUrl,

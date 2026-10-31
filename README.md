@@ -49,7 +49,9 @@ $scenes = [[
 $startId = 'sphere:1250';
 ```
 
-All fields shown are required; empty connection/placement lists are legitimate.
+All fields shown are required; coordinates may be null when unknown, and empty
+connection/placement lists are legitimate. Known coordinates produce geodesic
+bearings for standard tour arrows; unknown locations still support the selector.
 IDs and titles are plain text. The template escapes them; no trusted HTML input
 is needed. Scene documents deliberately use the existing data-contracts field
 names, not PSV node/marker options. `coordinates`, `connections`, `placements`,
