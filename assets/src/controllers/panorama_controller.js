@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { Viewer } from '@photo-sphere-viewer/core';
+import { Viewer, EquirectangularAdapter } from '@photo-sphere-viewer/core';
 import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import { VirtualTourPlugin } from '@photo-sphere-viewer/virtual-tour-plugin';
 import { tourNode } from '../geometry.js';
@@ -13,13 +13,21 @@ export default class extends Controller {
         this.alpha = 1;
         try {
             const nodes = this.scenesValue.map(scene => tourNode(scene, this.scenesValue));
+            const start = this.scenesValue.find(scene => scene.id === this.startIdValue);
+            const lookAt = scene => scene.placements.length ? {
+                yaw: (180 - scene.placements[0].azimuth - scene.heading) * Math.PI / 180,
+                pitch: scene.placements[0].inclination * Math.PI / 180,
+            } : { yaw: 0, pitch: 0 };
+            const position = lookAt(start);
             this.viewer = new Viewer({
+                defaultYaw: position.yaw, defaultPitch: position.pitch,
                 container: this.canvasTarget,
-                useXmpData: false,
+                adapter: [EquirectangularAdapter, { useXmpData: false }],
                 navbar: ['zoom', 'move', 'fullscreen'],
                 plugins: [MarkersPlugin, [VirtualTourPlugin, {
                     dataMode: 'client', positionMode: 'manual', renderMode: '3d',
                     nodes, startNodeId: this.startIdValue, preload: false,
+                    transitionOptions: node => ({ rotateTo: lookAt(this.scenesValue.find(scene => scene.id === node.id)), rotation: true }),
                 }]],
             });
             this.viewer.addEventListener('panorama-loaded', () => { this.statusTarget.textContent = ''; });

@@ -3,7 +3,7 @@
     <div {{ stimulus_target(controller, 'canvas') }} style="width:100%;height:clamp(300px,65vh,720px);min-width:0"></div>
     <p {{ stimulus_target(controller, 'status') }} role="status">Loading panorama…</p>
     <div class="d-flex flex-wrap gap-3 my-2">
-        <label>Tour location <select {{ stimulus_action(controller, 'navigate', 'change') }} {{ stimulus_target(controller, 'locations') }}>
+        <label style="max-width:100%">Tour location <select style="max-width:100%" {{ stimulus_action(controller, 'navigate', 'change') }} {{ stimulus_target(controller, 'locations') }}>
             {% for scene in scenes %}<option value="{{ scene.id }}" {% if scene.id == startId %}selected{% endif %}>{{ scene.title }}</option>{% endfor %}
         </select></label>
         <label><input type="checkbox" checked {{ stimulus_action(controller, 'visibility', 'change') }}> Show historical photographs</label>
