@@ -10,7 +10,7 @@
   "require": {
     "php": "^8.5",
     "survos/kit-bundle": "^2.41.9",
-    "survos/data-contracts": "^2.5",
+    "survos/data-contracts": "^2.45.6",
     "symfony/asset-mapper": "^8.1",
     "symfony/stimulus-bundle": "^3.0",
     "symfony/ux-twig-component": "^3.0"

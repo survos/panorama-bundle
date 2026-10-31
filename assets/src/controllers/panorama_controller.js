@@ -35,7 +35,7 @@ export default class extends Controller {
             this.viewer.getPlugin(VirtualTourPlugin).addEventListener('node-changed', ({ node }) => {
                 this.locationsTarget.value = node.id;
                 this.applyOverlays();
-                this.dispatch('location', { detail: { id: node.id } });
+                this.dispatch('location', { prefix: 'panorama', detail: { id: node.id } });
             });
         } catch (error) {
             this.failed(error);
@@ -45,7 +45,7 @@ export default class extends Controller {
     failed(error) {
         this.statusTarget.textContent = 'The interactive panorama could not load. Use the image links below.';
         this.fallbackTarget.open = true;
-        this.dispatch('error', { detail: { message: error?.message ?? 'Panorama loading failed' } });
+        this.dispatch('error', { prefix: 'panorama', detail: { message: error?.message ?? 'Panorama loading failed' } });
     }
 
     async navigate(event) {
