@@ -1,0 +1,36 @@
+{
+  "name": "@survos/panorama-bundle",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "peerDependencies": {
+    "@hotwired/stimulus": "^3.2.2"
+  },
+  "dependencies": {
+    "@photo-sphere-viewer/core": "5.10.1",
+    "@photo-sphere-viewer/markers-plugin": "5.10.1",
+    "@photo-sphere-viewer/virtual-tour-plugin": "5.10.1"
+  },
+  "symfony": {
+    "importmap": {
+      "@photo-sphere-viewer/core": "5.10.1",
+      "@photo-sphere-viewer/markers-plugin": "5.10.1",
+      "@photo-sphere-viewer/virtual-tour-plugin": "5.10.1",
+      "@photo-sphere-viewer/core/index.css": "5.10.1",
+      "@photo-sphere-viewer/markers-plugin/index.css": "5.10.1",
+      "@photo-sphere-viewer/virtual-tour-plugin/index.css": "5.10.1"
+    },
+    "controllers": {
+      "panorama": {
+        "main": "src/controllers/panorama_controller.js",
+        "fetch": "lazy",
+        "enabled": true,
+        "autoimport": {
+          "@photo-sphere-viewer/core/index.css": true,
+          "@photo-sphere-viewer/markers-plugin/index.css": true,
+          "@photo-sphere-viewer/virtual-tour-plugin/index.css": true
+        }
+      }
+    }
+  }
+}
