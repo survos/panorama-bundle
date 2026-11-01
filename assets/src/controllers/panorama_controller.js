@@ -17,7 +17,7 @@ export default class extends Controller {
             const lookAt = scene => scene.placements.length ? {
                 yaw: (180 - scene.placements[0].azimuth - scene.heading) * Math.PI / 180,
                 pitch: scene.placements[0].inclination * Math.PI / 180,
-            } : { yaw: 0, pitch: 0 };
+            } : { yaw: (scene.compassHeading ?? 0) * Math.PI / 180, pitch: 0 };
             const position = lookAt(start);
             this.viewer = new Viewer({
                 defaultYaw: position.yaw, defaultPitch: position.pitch,
@@ -27,7 +27,10 @@ export default class extends Controller {
                 plugins: [MarkersPlugin, [VirtualTourPlugin, {
                     dataMode: 'client', positionMode: 'manual', renderMode: '3d',
                     nodes, startNodeId: this.startIdValue, preload: false,
-                    transitionOptions: node => ({ rotateTo: lookAt(this.scenesValue.find(scene => scene.id === node.id)), rotation: true }),
+                    transitionOptions: node => {
+                        const scene = this.scenesValue.find(scene => scene.id === node.id);
+                        return { rotateTo: scene.compassHeading != null && this.viewer ? this.viewer.getPosition() : lookAt(scene), rotation: true };
+                    },
                 }]],
             });
             this.viewer.addEventListener('panorama-loaded', () => { this.statusTarget.textContent = ''; });
@@ -50,7 +53,7 @@ export default class extends Controller {
 
     async navigate(event) {
         if (!this.viewer) return;
-        try { await this.viewer.getPlugin(VirtualTourPlugin).setCurrentNode(event.target.value); }
+        try { await this.viewer.getPlugin(VirtualTourPlugin).setCurrentNode(event.detail?.id ?? event.target.value); }
         catch (error) { this.failed(error); }
     }
 

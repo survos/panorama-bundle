@@ -19,5 +19,8 @@
     "psr-4": {
       "Survos\\PanoramaBundle\\": "src/"
     }
+  },
+  "suggest": {
+    "symfony/ux-leaflet-map": "Required for the optional streetview component and its Symfony UX Map instance"
   }
 }

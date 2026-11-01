@@ -25,12 +25,19 @@ export function correction(heading, useNewAngles) {
     return { pan: (heading - 90) / 180 * 3.1416, tilt: 0, roll: 0 };
 }
 
+// Equirectangular image center is PSV yaw zero. A negative mesh Y rotation
+// places that center at its clockwise compass bearing in PSV's yaw frame.
+export function compassCorrection(heading) {
+    if (!Number.isFinite(heading)) throw new Error('Compass heading must be finite');
+    return { pan: -heading * Math.PI / 180, tilt: 0, roll: 0 };
+}
+
 export function tourNode(scene, scenes) {
     return {
         id: scene.id,
         panorama: scene.largeImageUrl,
         name: scene.title,
-        sphereCorrection: correction(scene.heading, scene.useNewAngles),
+        sphereCorrection: scene.compassHeading != null ? compassCorrection(scene.compassHeading) : correction(scene.heading, scene.useNewAngles),
         panoData: { poseHeading: 0, posePitch: 0, poseRoll: 0 },
         links: scene.connections.map(id => {
             const target = scenes.find(node => node.id === id);

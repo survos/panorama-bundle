@@ -1,13 +1,15 @@
 {% set controller = survos_stimulus('panorama-bundle', 'panorama') %}
-<section {{ attributes }} {{ stimulus_controller(controller, {scenes: scenes, startId: startId}) }} aria-label="{{ label }}">
+<section {{ attributes }} {{ stimulus_controller(controller, {scenes: scenes, startId: startId}) }} {{ stimulus_action(controller, 'navigate', 'panorama:navigate') }} aria-label="{{ label }}">
     <div {{ stimulus_target(controller, 'canvas') }} style="width:100%;height:clamp(300px,65vh,720px);min-width:0"></div>
     <p {{ stimulus_target(controller, 'status') }} role="status">Loading panorama…</p>
     <div class="d-flex flex-wrap gap-3 my-2">
         <label style="max-width:100%">Tour location <select style="max-width:100%" {{ stimulus_action(controller, 'navigate', 'change') }} {{ stimulus_target(controller, 'locations') }}>
             {% for scene in scenes %}<option value="{{ scene.id }}" {% if scene.id == startId %}selected{% endif %}>{{ scene.title }}</option>{% endfor %}
         </select></label>
+        {% if scenes|filter(scene => scene.placements|length > 0)|length > 0 %}
         <label><input type="checkbox" checked {{ stimulus_action(controller, 'visibility', 'change') }}> Show historical photographs</label>
         <label>Photo opacity <input type="range" min="0" max="1" step="0.05" value="1" {{ stimulus_action(controller, 'opacity', 'input') }}></label>
+        {% endif %}
     </div>
     <details {{ stimulus_target(controller, 'fallback') }}><summary>Images and accessible navigation</summary>
         <ul>{% for scene in scenes %}<li><a href="{{ scene.largeImageUrl }}">{{ scene.title }}</a>

@@ -98,3 +98,49 @@ composer validate --no-check-lock
 After installing a published version in a local app, use the existing mono
 link command (`php ~/sites/mono/link /path/to/app`, the monolink workflow).
 Make persistent tweaks here, not in the app's vendor tree.
+
+## Streetview: synchronized map and nearby panoramas
+
+The opt-in `survos:streetview` component revives the old map-plus-panorama widget
+as Stimulus composition, using supplied scene images rather than Google Street View.
+Existing `survos:panorama` consumers do not need to change.
+
+Install `symfony/ux-leaflet-map` and configure its default UX Map renderer. Pass a
+Symfony `Map` with `LeafletOptions` and the same scene documents used by the viewer:
+
+```twig
+<twig:survos:streetview :scenes="scenes" :startId="startId" :map="map" :nearbyLimit="8" />
+```
+
+Enable the package's `streetview` controller (eager, so it receives the child map's
+connect event). Flex metadata declares this; locally linked applications must update
+`assets/controllers.json` as well. No application-specific JavaScript is required.
+
+Map markers and a distance-sorted nearby list select panoramas. The selected marker,
+location selector and nearby list update after the viewer confirms navigation. All
+points remain available on the map; `nearbyLimit` limits only the list. Invalid or
+missing coordinates are omitted from the map/list; those scenes remain selectable
+in the panorama viewer. Distances are geodesic straight-line distances, not routes.
+
+The panorama section accepts `panorama:navigate` CustomEvents with `detail: {id}`
+and emits bubbling `panorama:location` after successful navigation. The map uses
+Symfony UX Map's `ux:map:connect` hook and cleans up its layers on disconnect.
+Each component has its own scoped map and viewer.
+
+Kronofoto is the UX reference: locations on a map, selecting a sphere, and curated
+connections. This widget does not write tour data or manufacture connections from
+proximity. Directional arrows still require explicit scene connections and calibrated
+source headings. Map tile licensing, attribution and referrer policy remain the host's
+responsibility. Titles are inserted as text, never interpreted as HTML.
+
+### Provider compass headings
+
+Scenes may set optional `compassHeading`: the bearing of the equirectangular image
+center in degrees clockwise from north. This overrides the legacy Kronofoto
+sphere correction for that scene. The world yaw then uses the same north-zero
+frame as geographic link bearings, and transitions preserve the current viewing
+direction. Omit it for existing Kronofoto scenes. This mode applies heading only,
+not reconstructed roll or pitch. `connections` must contain explicit destination
+IDs present in the scene set; the viewer does not infer routes from proximity.
+
+See the [portable folio panorama tour contract](docs/folio-panorama-tour.md) for field semantics, coordinate conventions, connection rules and reuse limits.

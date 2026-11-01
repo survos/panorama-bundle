@@ -37,3 +37,8 @@ test('overlay settings survive navigation and load errors expose fallback',async
     c.viewer.listeners['panorama-error']();assert.equal(c.fallbackTarget.open,true);
     assert.match(c.statusTarget.textContent,/could not load/);c.disconnect();
 });
+test('public navigation event selects a panorama without coupling to its select input', async()=>{
+    const c=fixture();c.connect();
+    await c.navigate({detail:{id:'one'}});
+    assert.equal(c.viewer.node,'one');c.disconnect();
+});

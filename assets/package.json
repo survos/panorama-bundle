@@ -30,6 +30,11 @@
           "@photo-sphere-viewer/markers-plugin/index.css": true,
           "@photo-sphere-viewer/virtual-tour-plugin/index.css": true
         }
+      },
+      "streetview": {
+        "main": "src/controllers/streetview_controller.js",
+        "fetch": "eager",
+        "enabled": true
       }
     }
   }

@@ -32,3 +32,19 @@ test('both source angle orders produce the same heading-only rotation without gl
 test('invalid placement data fails loudly', () => {
     assert.throws(() => imageCorners({azimuth:0,inclination:0,distance:0,width:700,height:500}, 0));
 });
+
+test('compass-aligned panorama centers and geographic arrows share north-zero yaw', async () => {
+    const { compassCorrection, tourNode } = await import('../assets/src/geometry.js');
+    for (const heading of [0, 90, 180, 270, 359]) {
+        const {pan} = compassCorrection(heading);
+        // Rotate the image-center unit vector [0,0,1] about mesh Y, then recover PSV yaw.
+        const yaw = Math.atan2(-Math.sin(pan), Math.cos(pan));
+        assert.ok(Math.abs(Math.sin(yaw-heading*Math.PI/180)) < 1e-10);
+        assert.ok(Math.cos(yaw-heading*Math.PI/180) > .999999);
+    }
+    const source = {id:'a',largeImageUrl:'/a',title:'A',compassHeading:90,coordinates:[0,0],connections:['n','e'],placements:[]};
+    const node = tourNode(source,[source,{id:'n',coordinates:[0,0.001]},{id:'e',coordinates:[0.001,0]}]);
+    assert.equal(node.links[0].position.yaw,0);
+    assert.equal(node.links[1].position.yaw,Math.PI/2);
+    assert.throws(()=>compassCorrection(NaN));
+});

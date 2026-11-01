@@ -1,0 +1,18 @@
+{% set controller = survos_stimulus('panorama-bundle', 'streetview') %}
+<section {{ attributes }} {{ stimulus_controller(controller, {scenes: scenes, startId: startId, nearbyLimit: nearbyLimit}) }}
+    {{ stimulus_action(controller, 'mapReady', 'ux:map:connect')|stimulus_action(controller, 'locationChanged', 'panorama:location') }} aria-label="{{ label }}">
+    <div style="display:flex;flex-wrap:wrap;gap:1rem">
+        <div style="flex:2 1 420px;min-width:0" {{ stimulus_target(controller, 'panorama') }}>
+            <twig:survos:panorama :scenes="scenes" :startId="startId" :label="label" />
+        </div>
+        <aside style="flex:1 1 280px;min-width:0">
+            <h2>Nearby panoramas</h2>
+            <p>Select a map point or a nearby capture. Orange marks your current location.</p>
+            {{ ux_map(map, {style: 'height:340px;width:100%', 'aria-label': 'Panorama locations'}) }}
+            <p role="status" {{ stimulus_target(controller, 'selected') }}></p>
+            <button type="button" class="btn btn-outline-secondary mb-3" {{ stimulus_action(controller, 'showAll') }}>Show all points</button>
+            <ol style="padding-left:1.25rem" {{ stimulus_target(controller, 'nearby') }}></ol>
+            <p>Distances are straight-line distances, not walking routes.</p>
+        </aside>
+    </div>
+</section>
