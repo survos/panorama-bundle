@@ -143,4 +143,16 @@ direction. Omit it for existing Kronofoto scenes. This mode applies heading only
 not reconstructed roll or pitch. `connections` must contain explicit destination
 IDs present in the scene set; the viewer does not infer routes from proximity.
 
+### Reading scenes from a folio
+
+`Survos\PanoramaBundle\Folio\FolioPanoramaScenes` (a service) builds the scene documents above from any
+`\PDO` on a folio (SQLite) or dfolio (DuckDB): `tours($db)`, `spheres($db)`, and
+`scenes($db, $folioCode, 'tour'|'obj', $id, $imageRoute = null)`. `$imageRoute` maps an object's local id to the
+URL the browser loads; omit it to use the source URL from the `page` table.
+
+Archives such as Fortepan send no CORS headers, so route images through your own controller and call
+`PanoramaImageStreamer::stream($sourceUrl, ['fortepan.us', ...])`. It refuses non-https and non-allowlisted hosts,
+follows no redirects and passes through only jpeg/png/webp. Take the URL from `FolioPanoramaScenes::imageUrl()`,
+never from the request.
+
 See the [portable folio panorama tour contract](docs/folio-panorama-tour.md) for field semantics, coordinate conventions, connection rules and reuse limits.
